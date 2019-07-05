@@ -2331,3 +2331,66 @@ end
 addCommandHandler("gotoplace", gotoPlace)
 addEvent("admin:gotoPlace", true)
 addEventHandler("admin:gotoPlace", root, gotoPlace)
+
+-- /loginto [Character Name] - By Skully (05/07/19) [Manager]
+function logIntoCharacter(thePlayer, commandName, ...)
+	if exports.global:isPlayerManager(thePlayer) then
+		if not (...) then
+			outputChatBox("SYNTAX: /" .. commandName .. " [Character Name]", thePlayer, 75, 230, 10)
+			return
+		end
+
+		local characterName = table.concat({...}, "_")
+		print("characterName: " .. characterName)
+		if (#characterName > 35) then
+			outputChatBox("ERROR: That is not a valid character name!", thePlayer, 255, 0, 0)
+			return false
+		end
+
+		local targetPlayerName = characterName:gsub("_", " ") -- Parsed name without underscore.
+
+		local characterID = exports.mysql:QueryString("SELECT `id` FROM `characters` WHERE `name` = (?);", characterName)
+		print("characterID: " .. tostring(characterID))
+		if not characterID then
+			outputChatBox("ERROR: A character with the name '" .. targetPlayerName .. "' does not exist!", thePlayer, 255, 0, 0)
+			return false
+		end
+
+		-- Check if the target character is online, if they are then we kick them from the server.
+		local isTargetOnline = getPlayerFromName(targetPlayerName)
+
+		-- Check if this manager is retarded and trying to log into their current character.
+		if (isTargetOnline == thePlayer) then
+			outputChatBox("Why are you trying to log into your current character?", thePlayer, 255, 0, 0)
+			return
+		end
+
+		local kickState = true -- If we are good to proceed with the loginto.
+		if isTargetOnline then
+			outputChatBox(targetPlayerName .. " is online, kicking them from the server..", thePlayer, 255, 255, 0)
+			kickState = kickPlayer(isTargetOnline, thePlayer, "A Manager logged into your character!")
+		end
+
+		-- If server failed to kick server.
+		if not kickState then
+			outputChatBox("ERROR: Failed to remove player from the server, please kick them manually.", thePlayer, 255, 0, 0)
+			return false
+		end
+
+		-- Send event to log into character but retain player ranks.
+		fadeCamera(thePlayer, false, 3)
+		exports.global:savePlayerData(thePlayer, 4) -- Save character data.
+
+		-- Notify and logging.
+		local thePlayerName = exports.global:getStaffTitle(thePlayer)
+		outputChatBox("Switching characters to '" .. targetPlayerName .. "'..", thePlayer, 75, 230, 10)
+		exports.global:sendMessageToManagers("[INFO] " .. thePlayerName .. " has logged into the character '" .. targetPlayerName .. "'.", true)
+		exports.logs:addLog(thePlayer, 1, {thePlayer, "CHAR" .. characterID}, "(/loginto) " .. thePlayerName .. " logged into the character '" .. targetPlayerName .. "'.")
+
+		--- Wait 3 seconds for fade screen and saving, then trigger the character switch.
+		setTimer(function()
+			triggerEvent("character:spawnCharacter", thePlayer, thePlayer, tonumber(characterID))
+		end, 3000, 1)
+	end
+end
+addCommandHandler("loginto", logIntoCharacter)
