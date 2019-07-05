@@ -127,8 +127,10 @@
 	<script src="g_factions.lua" type="shared" />
 		<export function="getFactionName" type="shared" />
 
-	<script src="s_player.lua" type="server" />
 	<script src="s_saving.lua" type="server" />
+		<export function="savePlayerData" type="server" />
+
+	<script src="s_player.lua" type="server" />
 	<script src="c_main.lua" type="client" />
 
 	<min_mta_version server="1.5.5-9.14060" client="1.5.5-9.14060" />
