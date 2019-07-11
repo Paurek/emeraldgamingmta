@@ -17,6 +17,7 @@ ______ _____ _      ___________ _       _____   __
 Copyright of the Emerald Gaming Development Team, do not distribute - All rights reserved. ]]
 
 emGUI = exports.emGUI
+buttonFont_14 = emGUI:dxCreateNewFont(":emGUI/fonts/buttonFont.ttf", 11)
 
 -- Disable vehicle engines when player enters.
 addEventHandler("onClientPlayerVehicleEnter", root, function(theVehicle, seat)
@@ -102,3 +103,42 @@ setTimer(function()
 		setElementData(theVehicle, "vehicle:mileage", om + vs)
 	end
 end, 2000, 0)
+
+-- Vehicle door adjusting.
+function showDoorAdjusterGUI(theVehicle)
+	local labels = {}
+	local scrollbars = {}
+
+	adjustDoorWindow = emGUI:dxCreateWindow(0.70, 0.41, 0.14, 0.34, "Adjust Doors", true)
+
+	labels[1] = 	emGUI:dxCreateLabel(0.09, 0.04, 0.40, 0.05, "Hood", true, adjustDoorWindow)
+	scrollbars[1] = emGUI:dxCreateScrollBar(0.09, 0.11, 0.83, 0.06, true, true, adjustDoorWindow)
+
+	labels[2] = 	emGUI:dxCreateLabel(0.09, 0.19, 0.40, 0.05, "Trunk", true, adjustDoorWindow)
+	scrollbars[2] = emGUI:dxCreateScrollBar(0.09, 0.26, 0.83, 0.06, true, true, adjustDoorWindow)
+
+	labels[3] = 	emGUI:dxCreateLabel(0.09, 0.34, 0.40, 0.05, "Driver Door", true, adjustDoorWindow)
+	scrollbars[3] = emGUI:dxCreateScrollBar(0.09, 0.41, 0.83, 0.06, true, true, adjustDoorWindow)
+
+	labels[4] = 	emGUI:dxCreateLabel(0.09, 0.49, 0.40, 0.05, "Passenger Door", true, adjustDoorWindow)
+	scrollbars[4] = emGUI:dxCreateScrollBar(0.09, 0.56, 0.83, 0.06, true, true, adjustDoorWindow)
+
+	labels[5] = 	emGUI:dxCreateLabel(0.09, 0.64, 0.40, 0.05, "Rear Left Door", true, adjustDoorWindow)
+	scrollbars[5] = emGUI:dxCreateScrollBar(0.09, 0.71, 0.83, 0.06, true, true, adjustDoorWindow)
+
+	labels[6] = 	emGUI:dxCreateLabel(0.09, 0.79, 0.40, 0.05, "Rear Right Door", true, adjustDoorWindow)
+	scrollbars[6] = emGUI:dxCreateScrollBar(0.09, 0.86, 0.83, 0.06, true, true, adjustDoorWindow)
+
+	for i = 1, 6 do
+		emGUI:dxSetFont(labels[i], buttonFont_14)
+		-- Is setVehicleDoorOpenRatio synced? If not then setup serverside trigger.
+		addEventHandler("onDgsScrollBarScrollPositionChange", scrollbars[i], function(toState) setVehicleDoorOpenRatio(theVehicle, i - 1, toState / 100) end)
+	end
+
+	for i = 0, 5 do
+		local state = getVehicleDoorOpenRatio(theVehicle, i)
+		emGUI:dxScrollBarSetScrollBarPosition(scrollbars[i + 1], getVehicleDoorOpenRatio(theVehicle, i) * 100)
+	end
+end
+addEvent("vehicle:showDoorAdjusterGUI", true)
+addEventHandler("vehicle:showDoorAdjusterGUI", root, showDoorAdjusterGUI)
