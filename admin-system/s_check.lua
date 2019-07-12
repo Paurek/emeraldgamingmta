@@ -20,14 +20,15 @@ Copyright of the Emerald Gaming Development Team, do not distribute - All rights
 -- NOTE: This function's command handler is located in c_check.lua within the function c_checkPlayer since "check" is a default MTA server-sided command.
 function s_checkPlayer(thePlayer, commandName, targetPlayer)
 	if exports.global:isPlayerTrialAdmin(thePlayer, true) then
-		if not (targetPlayer) then
-			outputChatBox("SYNTAX: /" .. commandName .. " [Player/ID]", thePlayer, 75, 230, 10)
-			return false
+		if not targetPlayer or (#targetPlayer > 30) then
+			outputChatBox("SYNTAX: /" .. commandName .. " [Username/Player/ID]", thePlayer, 75, 230, 10)
+			return
 		end
 
-		local targetPlayer = exports.global:getPlayerFromPartialNameOrID(targetPlayer, thePlayer)
+		local targetPlayerUsername = targetPlayer
+		local targetPlayer = exports.global:getPlayerFromPartialNameOrID(targetPlayer, thePlayer, true)
 
-		if (targetPlayer) then
+		if (targetPlayer) then -- If player is online and exists.
 			local targetAccountID = getElementData(targetPlayer, "account:id")
 			local targetCharacterID = getElementData(targetPlayer, "character:id")
 
@@ -38,6 +39,17 @@ function s_checkPlayer(thePlayer, commandName, targetPlayer)
 			local characterData = exports.mysql:Query("SELECT * FROM `accounts` WHERE `id` = (?);", targetCharacterID)
 
 			triggerClientEvent(thePlayer, "admin:showCheckGUI", thePlayer, targetPlayer, accountData, characterData)
+		else
+			local targetAccountID = exports.mysql:QuerySingle("SELECT `id`, `anote` FROM `accounts` WHERE `username` = (?);", tostring(targetPlayerUsername))
+			if not (targetAccountID) then
+				outputChatBox("ERROR: That player does not exist!", thePlayer, 255, 0, 0)
+				return false
+			end
+
+			local playerIP = "Player Offline"
+			local accountData = {targetAccountID.anote, playerIP}
+			local characterData = {} -- Do something with this since the client will need this even if player is offline, populate offline data?
+			outputChatBox("Offline player checks are currently disabled.", thePlayer, 255, 0, 0)
 		end
 	end
 end
