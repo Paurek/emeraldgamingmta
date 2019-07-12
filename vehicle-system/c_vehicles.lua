@@ -106,9 +106,69 @@ end, 2000, 0)
 
 -- Vehicle door adjusting.
 function showDoorAdjusterGUI(theVehicle)
+	-- If vehicle is locked, prevent being able to adjust doors.
+	if isVehicleLocked(theVehicle) then
+		outputChatBox("You can't adjust the vehicle doors when it is locked.", 255, 0, 0)
+		return false
+	end
+
+	local seatID = false -- If this exists, the user is in a specific seat and can only adjust that door.
+
+	if (getVehicleOccupant(theVehicle, 0) == localPlayer) then seatID = 0
+		elseif (getVehicleOccupant(theVehicle, 1) == localPlayer) then seatID = 1
+		elseif (getVehicleOccupant(theVehicle, 2) == localPlayer) then seatID = 2
+		elseif (getVehicleOccupant(theVehicle, 3) == localPlayer) then seatID = 3
+	end
+
+	local doorNames = {
+		[0] = "Driver Door",
+		[1] = "Passenger Door",
+		[2] = "Rear Left Door",
+		[3] = "Rear Right Door",
+	}
+
 	local labels = {}
 	local scrollbars = {}
 
+
+	if seatID then
+		if (seatID == 0) then -- If player is in driver seat.
+			adjustDoorDriverWindow = emGUI:dxCreateWindow(0.66, 0.51, 0.14, 0.19, "Adjust Doors", true)
+
+			local labelDriver = emGUI:dxCreateLabel(0.05, 0.05, 0.43, 0.09, "Driver Door", true, adjustDoorDriverWindow)
+			local scrollbarDriver = emGUI:dxCreateScrollBar(0.05, 0.18, 0.88, 0.12, true, true, adjustDoorDriverWindow)
+			emGUI:dxSetFont(labelDriver, buttonFont_14)
+			addEventHandler("onDgsScrollBarScrollPositionChange", scrollbarDriver, function(toState) setVehicleDoorOpenRatio(theVehicle, 2, toState / 100) end)
+
+			local labelHood = emGUI:dxCreateLabel(0.05, 0.35, 0.43, 0.09, "Hood", true, adjustDoorDriverWindow)
+			local scrollbarHood = emGUI:dxCreateScrollBar(0.05, 0.48, 0.88, 0.12, true, true, adjustDoorDriverWindow)
+			emGUI:dxSetFont(labelHood, buttonFont_14)
+			addEventHandler("onDgsScrollBarScrollPositionChange", scrollbarHood, function(toState) setVehicleDoorOpenRatio(theVehicle, 0, toState / 100) end)
+
+			local labelTrunk = emGUI:dxCreateLabel(0.05, 0.66, 0.43, 0.09, "Trunk", true, adjustDoorDriverWindow)
+			local scrollbarTrunk = emGUI:dxCreateScrollBar(0.05, 0.79, 0.88, 0.12, true, true, adjustDoorDriverWindow)
+			emGUI:dxSetFont(labelTrunk, buttonFont_14)
+			addEventHandler("onDgsScrollBarScrollPositionChange", scrollbarTrunk, function(toState) setVehicleDoorOpenRatio(theVehicle, 1, toState / 100) end)
+
+			emGUI:dxScrollBarSetScrollBarPosition(scrollbarDriver, getVehicleDoorOpenRatio(theVehicle, 2) * 100)
+			emGUI:dxScrollBarSetScrollBarPosition(scrollbarHood, getVehicleDoorOpenRatio(theVehicle, 0) * 100)
+			emGUI:dxScrollBarSetScrollBarPosition(scrollbarTrunk, getVehicleDoorOpenRatio(theVehicle, 1) * 100)
+		else
+			-- Single door UI.
+			adjustDoorWindowSingle = emGUI:dxCreateWindow(0.70, 0.40, 0.14, 0.10, "Adjust Doors", true)
+
+			doorLabel = emGUI:dxCreateLabel(0.06, 0.2, 0.43, 0.17, doorNames[seatID], true, adjustDoorWindowSingle)
+			emGUI:dxSetFont(doorLabel, buttonFont_14)
+
+			scrollbar = emGUI:dxCreateScrollBar(0.06, 0.5, 0.88, 0.25, true, true, adjustDoorWindowSingle)
+			addEventHandler("onDgsScrollBarScrollPositionChange", scrollbar, function(toState) setVehicleDoorOpenRatio(theVehicle, seatID + 2, toState / 100) end)
+
+			emGUI:dxScrollBarSetScrollBarPosition(scrollbar, getVehicleDoorOpenRatio(theVehicle, seatID + 2) * 100)
+		end
+		return
+	end
+
+	-- Full menu.
 	adjustDoorWindow = emGUI:dxCreateWindow(0.70, 0.41, 0.14, 0.34, "Adjust Doors", true)
 
 	labels[1] = 	emGUI:dxCreateLabel(0.09, 0.04, 0.40, 0.05, "Hood", true, adjustDoorWindow)
@@ -135,10 +195,7 @@ function showDoorAdjusterGUI(theVehicle)
 		addEventHandler("onDgsScrollBarScrollPositionChange", scrollbars[i], function(toState) setVehicleDoorOpenRatio(theVehicle, i - 1, toState / 100) end)
 	end
 
-	for i = 0, 5 do
-		local state = getVehicleDoorOpenRatio(theVehicle, i)
-		emGUI:dxScrollBarSetScrollBarPosition(scrollbars[i + 1], getVehicleDoorOpenRatio(theVehicle, i) * 100)
-	end
+	for i = 0, 5 do emGUI:dxScrollBarSetScrollBarPosition(scrollbars[i + 1], getVehicleDoorOpenRatio(theVehicle, i) * 100) end
 end
 addEvent("vehicle:showDoorAdjusterGUI", true)
 addEventHandler("vehicle:showDoorAdjusterGUI", root, showDoorAdjusterGUI)
