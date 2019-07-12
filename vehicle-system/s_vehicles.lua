@@ -392,12 +392,21 @@ function toggleVehicleLockInside(theVehicle, staffOverride)
 				playCarLockToggleFx(theVehicle, false, true)
 			else
 				setVehicleLocked(theVehicle, true)
-				setVehicleDoorState(theVehicle, 0, 0)
-				setVehicleDoorState(theVehicle, 1, 0)
-				setVehicleDoorState(theVehicle, 2, 0)
-				setVehicleDoorState(theVehicle, 3, 0)
-				setVehicleDoorState(theVehicle, 4, 0)
-				setVehicleDoorState(theVehicle, 5, 0)
+
+				-- Actions to do for every door state when locking.
+				local stateTable = {
+					[0] = 0, -- Shut/intact.
+					[1] = 0, -- Ajar, intact.
+					[2] = 2, -- Shut, damaged.
+					[3] = 2, -- Ajar, damaged.
+					[4] = 4, -- Missing.
+				}
+
+				for i = 0, 5 do
+					setVehicleDoorState(theVehicle, i, stateTable[getVehicleDoorState(theVehicle, i)])
+					setVehicleDoorOpenRatio(theVehicle, i, 0) -- Closes doors physically.
+				end
+
 				triggerEvent("rp:sendAme", source, "locks the vehicle doors.")
 				if (staffOverride) then
 					local thePlayerName = exports.global:getStaffTitle(source, 1)
@@ -439,6 +448,7 @@ function toggleVehicleLockOutside(theVehicle, staffOverride)
 
 		for i = 0, 5 do
 			setVehicleDoorState(theVehicle, i, stateTable[getVehicleDoorState(theVehicle, i)])
+			setVehicleDoorOpenRatio(theVehicle, i, 0) -- Closes doors physically.
 		end
 
 		triggerEvent("rp:sendAme", source, "locks the vehicle. (( " .. theVehicleName .. " ))")
