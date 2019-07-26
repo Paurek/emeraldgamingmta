@@ -183,8 +183,8 @@ function savePlayerData(thePlayer, saveType)
 	end
 end
 addEvent("global:savePlayer", true)
-addEventHandler("global:savePlayer", getRootElement(), savePlayerData)
-addEventHandler("onPlayerQuit", getRootElement(), savePlayerData)
+addEventHandler("global:savePlayer", root, savePlayerData)
+addEventHandler("onPlayerQuit", root, savePlayerData)
 setTimer(hourlyGlobalSave, 3600000, 0) -- Every hour.
 
 addCommandHandler("saveall", function(p)

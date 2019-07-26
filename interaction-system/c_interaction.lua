@@ -169,6 +169,10 @@ function showInteractionMenu(theElement, absoluteX, absoluteY)
 			table.insert(actionTable, "Vehicle Textures")
 		end
 
+		if (getVehicleType(theElement) == "Automobile") or (getVehicleType(theElement) == "Plane") or (getVehicleType(theElement) == "Helicopter") or (getVehicleType(theElement) == "Train") or (getVehicleType(theElement) == "Monster Truck") then
+			table.insert(actionTable, "Adjust Doors")
+		end
+
 	elseif (theElementType == "object") then
 		local objectID = getElementData(theElement, "object:objectid")
 		theElementName = exports["item-system"]:getItemName(objectID)
@@ -236,6 +240,8 @@ function handleInteractionClick(theElement, theElementType, clickedOption, inter
 			triggerServerEvent("vehicle:respawnvehcall", localPlayer, localPlayer, "ui", vehicleID)
 		elseif (selectedAction == "Vehicle Textures") then
 			-- Vehicle Textures
+		elseif (selectedAction == "Adjust Doors") then
+			triggerEvent("vehicle:showDoorAdjusterGUI", localPlayer, theElement)
 		end
 	elseif (theElementType == "object") then
 		if (selectedAction == "Examine") then

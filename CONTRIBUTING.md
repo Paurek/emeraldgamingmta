@@ -76,8 +76,6 @@ When creating general commands, there are a few general things you must always c
 ### Committing To GitHub
 Prior to committing any code, ensure you have overlooked your code and there are no minor errors, typos or spelling mistakes as this would require you to commit once again, slowing the process of efficiency.
 
-If you are working at the same time as other developers, **ensure you are not working within the same file to prevent merge conflicts.**
-
 After your code is ready to go and you are prepared to push your code to the repository, the commit message should be relative to what your code involves. For example, if you were working on the command `/sethp`, your commit message would be *"/sethp added."*
 
 * In the event that you are making adjustments to your code, you must use the name commit name as the original code's commit, and add a number afterwards incrementing upwards from 1. In this scenario, if we adjust the code for `/sethp` again, the commit message would be *"/sethp 2"*.
@@ -86,4 +84,3 @@ After your code is ready to go and you are prepared to push your code to the rep
   * **Example:** `/sethp (#15)`
 
 * Ensure that you always update your [issue](../issues) throughout development. It's extremely important as it keeps others up to date on the current status of the issue and your work. Ensure the labels are correct and adjusted throughout the different stages of completion.
-  * If you are a Trial Developer and your code is ready, attach the 'review' label and wait for your code to be tested by a Lead Developer prior to closing the issue.

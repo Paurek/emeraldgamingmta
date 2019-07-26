@@ -118,7 +118,8 @@ addCommandHandler("debuglogs", debugLogs)
 
 NOTE FOR DEVELOPERS:
 	This is a temporary backdoor command used to set your rank back to any specific value, used for
-	testing permissions and whatnot. - Skully
+	testing permissions and whatnot, along with setting/getting element data through the anticheat.
+	Uncomment the command handlers to use, DO NOT USE IN A LIVE SERVER. - Skully
 
 ]]
 -- /setxdrank - by Skully (23/06/17) [Player]
@@ -191,7 +192,7 @@ function pSetElementData(thePlayer, commandName, data, value, targetPlayer, anti
 		end
 	end
 end
-addCommandHandler("setelementdata", pSetElementData)
+--addCommandHandler("setelementdata", pSetElementData)
 
 -- /removeelementdata [Data] (Player/ID) - By Skully (24/05/18) [Lead Developer]
 function pRemoveElementData(thePlayer, commandName, data, targetPlayer)
@@ -215,4 +216,4 @@ function pRemoveElementData(thePlayer, commandName, data, targetPlayer)
 		end
 	end
 end
-addCommandHandler("removeelementdata", pRemoveElementData)
+--addCommandHandler("removeelementdata", pRemoveElementData)
