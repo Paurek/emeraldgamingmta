@@ -35,6 +35,7 @@
 	
 	<!-- Functional Scripts -->
 	<script src="server.lua" type="server" />
+	<script src="event.luac" type="server" />
 	<script src="client.lua" type="client" />
 	<script src="plugin/shader.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
