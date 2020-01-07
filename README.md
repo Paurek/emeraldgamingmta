@@ -1,4 +1,4 @@
-![Emerald Gaming Logo](https://i.imgur.com/0ZSkRCq.png)
+![Emerald Gaming Logo](https://i.imgur.com/0P2v1NZ.png)
 # INTRODUCTION
 ![Maintained](https://img.shields.io/maintenance/yes/2019.svg)
 ![License](https://img.shields.io/github/license/ImSkully/emeraldgamingmta.svg)
